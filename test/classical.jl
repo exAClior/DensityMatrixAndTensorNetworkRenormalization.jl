@@ -22,7 +22,7 @@ using Test, DensityMatrixAndTensorNetworkRenormalization
 end
 
 @testset "Hamiltonian" begin
-    n, a, pbc, h, J, β = 3, 1.0, true, 0.0, 1.0, 0.0000000001
+    n, a, pbc, h, J, β = 4, 1.0, true, 0.0, 1.0, 0.001
 
     ising = IsingModel(SquareLattice(n, a, pbc), h, J)
 
@@ -36,5 +36,9 @@ end
         end
         naive_Z += exp(-β * ham)
     end
-    @test naive_Z ≈ partition_function(β, ising)
+
+    @test naive_Z ≈ partition_function(β, ising, :MT)
+    @test isapprox(partition_function(β, ising, :MT), partition_function(β, ising, :TN), rtol=0.001)
+    partition_function(β, ising, :TN)
+    partition_function(β, ising, :MT)
 end
